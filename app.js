@@ -60,10 +60,21 @@ let arrowLayer = null;
    METAR
 ---------------------------------------------------------- */
 async function fetchMetar() {
-  const url = `https://avwx.rest/api/metar/EBLG?token=${AVWX_API_KEY}&format=json`;
+  const url = PROXY + encodeURIComponent(
+  `https://avwx.rest/api/metar/EBLG?token=${AVWX_API_KEY}&format=json`
+);
+
   const r = await fetch(url);
   return r.json();
 }
+async function refresh() {
+  let metar = null;
+  try {
+    metar = await fetchMetar();
+    updateMetarUI(metar);
+  } catch (e) {
+    document.getElementById("meteo-summary").textContent = "METAR indisponible";
+  }
 
 function updateMetarUI(m) {
   document.getElementById("meteo-summary").textContent =
